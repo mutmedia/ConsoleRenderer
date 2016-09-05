@@ -24,6 +24,8 @@ namespace ColoredConsole {
 		Color WINCOLOREDCONSOLE_API GetColor(int x, int y) const;
 		void WINCOLOREDCONSOLE_API Clear() const;
 		void WINCOLOREDCONSOLE_API Clear(Color clearColor) const;
+		int width() const { return size_x_; }
+		int height() const { return size_y_; }
 
 	private:
 		int size_x_, size_y_;
