@@ -3,9 +3,11 @@ var bmp = require("bmp-js");
 var fs = require('fs');
 var Jimp = require("jimp");
 
+var inLocation = "TestImages";
+var outLocation = "GeneratedCode";
 var filename = "Routh";
 
-Jimp.read(filename+ ".bmp", function (err, consoleColors) {
+Jimp.read(inLocation + filename + ".bmp", function (err, consoleColors) {
   colorsList = [];
 
   consoleColors.scan(0, 0, consoleColors.bitmap.width, consoleColors.bitmap.height, function (x, y, idx) {
@@ -22,9 +24,9 @@ Jimp.read(filename+ ".bmp", function (err, consoleColors) {
 
 
     colorListtoCppCode = _.reduce(colorsList, function(result, c) {
-        return result += "img->setColor(" + c.x + ", "+ c.y+ ", { "+ c.color+ " });\n";
+        return result += "img->SetColor(" + c.x + ", "+ c.y+ ", { "+ c.color+ " });\n";
     }, "void Create" + filename + "(Image * img) {\n");
     colorListtoCppCode += "}";
-    fs.writeFile(filename + ".txt", colorListtoCppCode);
+    fs.writeFile(outLocation + filename + ".txt", colorListtoCppCode);
 
   });

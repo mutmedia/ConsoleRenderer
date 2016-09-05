@@ -3,7 +3,9 @@ var bmp = require("bmp-js");
 var fs = require('fs');
 var Jimp = require("jimp");
 
-Jimp.read('consolecolors.bmp', function (err, consoleColors) {
+var imagesLocation = "DiscoveryImages";
+
+Jimp.read(imagesLocation + '/consolecolors.bmp', function (err, consoleColors) {
     if (err) throw err;
     var colorSet = {};
     var simpleColors = [];
@@ -56,7 +58,7 @@ Jimp.read('consolecolors.bmp', function (err, consoleColors) {
           cleanImage.setPixelColor(simpleColors[i + 32*j], i, j);
         }
       }
-      cleanImage.write("cleanImage.bmp");
+      cleanImage.write(imagesLocation + "cleanImage.bmp");
     });
 
     var sortedOutput = new Jimp(32, 32, function (err, sortedImage) {
@@ -66,7 +68,7 @@ Jimp.read('consolecolors.bmp', function (err, consoleColors) {
           sortedImage.setPixelColor(sortedColors[i + 32*j], i, j);
         }
       }
-      sortedImage.write("sortedImage.bmp");
+      sortedImage.write(imagesLocation + "sortedImage.bmp");
     });
 
     var setOutput = new Jimp(19, 19, function (err, setImage) {
@@ -79,7 +81,7 @@ Jimp.read('consolecolors.bmp', function (err, consoleColors) {
             setImage.setPixelColor(arr[i + 19*j], i, j);
         }
       }
-      setImage.write("setImage.bmp");
+      setImage.write(imagesLocation + "setImage.bmp");
     });
 
     colorSettoCppMap = _.reduce(colorSet, function(result, value, key) {
