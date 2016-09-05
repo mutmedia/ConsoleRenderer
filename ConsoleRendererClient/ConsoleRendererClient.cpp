@@ -4,8 +4,11 @@
 #include "stdafx.h"
 #include "WinConsoleRenderer.h"
 #include "Image.h"
+#include "ImageHelper.h"
 
-void MakeX(ColoredConsole::Image * img, int posX, int posY, int size, ColoredConsole::Color c)
+using namespace ColoredConsole;
+
+void MakeX(Image * img, int posX, int posY, int size, Color c)
 {
 	for (auto i = 0; i < size; i++)
 	{
@@ -14,8 +17,7 @@ void MakeX(ColoredConsole::Image * img, int posX, int posY, int size, ColoredCon
 	}
 }
 
-// Helper on ConsoleColors::Image?
-void Circle(ColoredConsole::Image * img, int centerX, int centerY, int radius, ColoredConsole::Color c)
+void Circle(Image * img, int centerX, int centerY, int radius, Color c)
 {
 	auto x = radius;
 	auto y = 0;
@@ -43,7 +45,7 @@ void Circle(ColoredConsole::Image * img, int centerX, int centerY, int radius, C
 	}
 }
 
-void MakeGrid(ColoredConsole::Image * img, int size, ColoredConsole::Color c)
+void MakeGrid(Image * img, int size, Color c)
 {
 	for (auto i = 0; i < size; i++)
 	{
@@ -54,12 +56,12 @@ void MakeGrid(ColoredConsole::Image * img, int size, ColoredConsole::Color c)
 	}
 }
 
-void PutX(ColoredConsole::Image * img, int x, int y, int gridsize)
+void PutX(Image * img, int x, int y, int gridsize)
 {
 	MakeX(img, x * gridsize / 3 + 1, y * gridsize / 3 + 1, gridsize / 3 -1, { 0xff0000 });
 }
 
-void PutO(ColoredConsole::Image * img, int x, int y, int gridsize)
+void PutO(Image * img, int x, int y, int gridsize)
 {
 	Circle(img, gridsize / 6 + x * gridsize / 3, gridsize / 6 + y * gridsize / 3, gridsize / 6 - 1, { 0x0000ff });
 }
@@ -69,20 +71,22 @@ int main()
 
 	int w = 100, h = 100;
 
-	auto img = new ColoredConsole::Image(w, h);
-	auto renderer = new ColoredConsole::WinConsoleRenderer(w, h);
+	auto img = new Image(w, h);
+	auto renderer = new WinConsoleRenderer(w, h);
 	// Draw X
-	MakeGrid(img, 30, { 0xffffff });
-	PutO(img, 0, 0, 30);
-	PutX(img, 1, 1, 30);
-	PutO(img, 1, 0, 30);
+	//MakeGrid(img, 30, { 0xffffff });
+	//PutO(img, 0, 0, 30);
+	//PutX(img, 1, 1, 30);
+	//PutO(img, 1, 0, 30);
 
-	
+	//ImageHelper::DrawLine(img, { 0x00ffff }, 50, 10, 100-10, 100-50);
+	ImageHelper::DrawTriangle(img, { 0xff0000 }, { { 30, 20 }, { 30, 30 }, { 20, 30 } });
+	ImageHelper::DrawTriangle(img, { 0x00ff00 }, { { 29, 20 },{ 20, 29 },{ 20, 20 } });
 	//FPS Test
 	while (true) {
 		renderer->Render(img);
 		renderer->ShowFps(img);
-	}	
+	}
 
 	getchar();
 	return 0;
