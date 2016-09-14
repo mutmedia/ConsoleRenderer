@@ -3,9 +3,9 @@ var bmp = require("bmp-js");
 var fs = require('fs');
 var Jimp = require("jimp");
 
-var inLocation = "TestImages";
-var outLocation = "GeneratedCode";
-var filename = "Routh";
+var inLocation = "./TestImages/";
+var outLocation = "./GeneratedCode/";
+var filename = process.argv[2];
 
 Jimp.read(inLocation + filename + ".bmp", function (err, consoleColors) {
   colorsList = [];
