@@ -87,7 +87,6 @@ IMAGE_FUNCTION(DrawTriangle, Triangle t)
 	}
 
 }
-}
 
 IMAGE_FUNCTION(DrawCircle, Vec2i center, int radius)
 {
@@ -115,5 +114,6 @@ IMAGE_FUNCTION(DrawCircle, Vec2i center, int radius)
 			err += 1 - 2 * x;
 		}
 	}
+}
 }
 }
