@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\ColoredConsole;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\Geometry;E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\ColoredConsole;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,7 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\ColoredConsole;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\Geometry;E:\Users\gusta\OneDrive\Documentos\visual studio 2015\Projects\Renderer\ColoredConsole;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,6 +162,9 @@
   <ItemGroup>
     <ProjectReference Include="..\ColoredConsole\ColoredConsole.vcxproj">
       <Project>{af94cea2-5057-45dd-a76e-6821429a48f0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Geometry\Geometry.vcxproj">
+      <Project>{87951483-977e-411e-a510-4b50ae36f3bb}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

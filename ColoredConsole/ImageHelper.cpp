@@ -3,13 +3,10 @@
 #include <memory>
 #include <vector> 
 
+using namespace Geometry;
+
 namespace ColoredConsole {
 namespace ImageHelper {
-
-//TODO: Move to geometry
-Vec3f cross(Vec3f u, Vec3f v) {
-	return{ u.y * v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y - u.y*v.x };
-}
 
 IMAGE_FUNCTION(DrawLine, int x_0, int y_0, int x_1, int y_1)
 {
@@ -50,7 +47,7 @@ IMAGE_FUNCTION(DrawLine, Vec2i p_0, Vec2i p_1)
 
 IMAGE_FUNCTION(DrawTriangle, Triangle t)
 {
-	Rectangle bb = {};
+	Geometry::Rectangle bb = {};
 	bb.bottom_right = { 0, 0 };
 	bb.top_left = { img->width() - 1, img->height() - 1 };
 	
