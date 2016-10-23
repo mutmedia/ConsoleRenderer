@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 namespace ColoredConsole {
-	static const std::unordered_map<int, int>::value_type x[] = {
+	static const std::unordered_map<unsigned int, unsigned int>::value_type x[] = {
 		std::make_pair(0,0),
 		std::make_pair(32,16),
 		std::make_pair(63,48),
@@ -355,5 +355,5 @@ namespace ColoredConsole {
 
 	};
 
-	static const std::unordered_map<int, int> kConsoleColorMap(x, x + sizeof x / sizeof x[0]);
+	static const std::unordered_map<unsigned int, unsigned int> kConsoleColorMap(x, x + sizeof x / sizeof x[0]);
 }

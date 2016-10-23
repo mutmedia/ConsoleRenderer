@@ -26,10 +26,12 @@ namespace ColoredConsole {
 		void WINCOLOREDCONSOLE_API Clear(Color clearColor) const;
 		int width() const { return size_x_; }
 		int height() const { return size_y_; }
+		float *zbuffer;		
 
 	private:
 		int size_x_, size_y_;
 		Color * buffer_;
+		
 	};
 }
 

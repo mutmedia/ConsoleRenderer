@@ -28,15 +28,24 @@ WinConsoleRenderer::~WinConsoleRenderer() {}
 void WinConsoleRenderer::Render(const Image* img) {
 	auto begin_time = clock();
 	// Get correct data for sub and super sampling of img
-
+	Color last_color = {0};
+	Color current_color = { 0 };
+	CHAR_INFO * char_info = &(rgb_to_char_info_buffer_[0]);;
 	for (auto y = 0; y < size_y_; y++) {
 		for (auto x = 0; x < size_x_; x++) {
-			auto c = img->GetColor(x, y);
-			auto char_info = RgbToCharInfo(c);
-			char_info_array_[x + size_x_ * y] = char_info;
+			current_color = img->GetColor(x, y);
+			if(last_color.val != current_color.val) {
+				char_info = &(rgb_to_char_info_buffer_[current_color.val]);
+				if (char_info->Char.AsciiChar == 0) {
+					*char_info = RgbToCharInfo(current_color);
+				}
+			}			
+			char_info_array_[x + size_x_ * y] = *char_info;
+			last_color = current_color;
 		}
 	}
 	
+	// Takes  4ms (cant change)
 	WriteConsoleOutputA(console_handle_, char_info_array_, char_info_array_size_, {0}, &buffer_rectangle_);
 	SetConsoleTextAttribute(console_handle_, base_atr_);
 
@@ -94,14 +103,27 @@ CHAR_INFO WinConsoleRenderer::ColorCodeToCharInfo(int color_code) const {
 	return char_info;
 }
 
-int WinConsoleRenderer::RgbToColorCode(Color color) const {
+int WinConsoleRenderer::RgbToColorCode(Color color) {
 	int dif = 9999999999;
 	auto key = 0;
+
 	for (auto i = 0; i < kColorListSize; i++) {
 		auto testColor = kColorList[i];
-		auto difR = abs(color.r - ((testColor & 0xff0000) >> (16)));
-		auto difG = abs(color.g - ((testColor & 0x00ff00) >> (8)));
-		auto difB = abs(color.b - (testColor & 0x0000ff));
+
+		int32_t difR = (color.r - ((testColor & 0xff0000) >> (16)));
+		int32_t difG = (color.g - ((testColor & 0x00ff00) >> (8)));
+		int32_t difB = (color.b - (testColor & 0x0000ff));
+
+		// Weird abs calculation
+		uint32_t temp = difR >> 31;
+		difR ^= temp;
+		difR += temp & 1;
+		temp = difG >> 31;
+		difG ^= temp;
+		difG += temp & 1;
+		temp = difB >> 31;
+		difB ^= temp;
+		difB += temp & 1;
 
 		auto newDif = difR + difG + difB;
 		if (newDif < dif) {
@@ -109,7 +131,9 @@ int WinConsoleRenderer::RgbToColorCode(Color color) const {
 			key = testColor;
 		}
 	}
-	return kConsoleColorMap.at(key);
+	auto ci = kConsoleColorMap.at(key);
+	//rgb_to_char_info_buffer_->insert_or_assign(color.val, ci);
+	return ci;
 }
 
 CHAR_INFO WinConsoleRenderer::RgbToCharInfo(Color color) const {

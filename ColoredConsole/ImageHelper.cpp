@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ImageHelper.h"
-#include <memory>
 #include <vector> 
 
 using namespace Geometry;
@@ -65,19 +64,26 @@ IMAGE_FUNCTION(DrawTriangle, Triangle t)
 	bb.bottom_right.x = min(img->width(),	max(bb.bottom_right.x, t.v_2.x));
 	bb.bottom_right.y = min(img->height(),	max(bb.bottom_right.y, t.v_2.y));
 
-	auto IsInsideTriangle = [](Vec2i point, Triangle triangle)
+	auto Barycentric = [](Vec3f point, Triangle triangle)
 	{
 		// use barycentricCoords
-		auto u = cross({ float(triangle.v_2.x - triangle.v_0.x), float(triangle.v_1.x - triangle.v_0.x), float(triangle.v_0.x - point.x) },
-		{ float(triangle.v_2.y - triangle.v_0.y), float(triangle.v_1.y - triangle.v_0.y), float(triangle.v_0.y - point.y) });
-		Vec3f bar = (std::abs(u.z) < 1) ? Vec3f{ -1, 1, 1 } :
-			Vec3f{ 1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z };
-		return !(bar.x < 0 || bar.y < 0 || bar.z < 0);
+		auto u = cross({ triangle.v_2.x - triangle.v_0.x, triangle.v_1.x - triangle.v_0.x, triangle.v_0.x - point.x },
+		{ triangle.v_2.y - triangle.v_0.y, triangle.v_1.y - triangle.v_0.y, triangle.v_0.y - point.y });
+		return (std::abs(u.z) > 0.01) 
+			? Vec3f{ 1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z }
+			: Vec3f{ -1, 1, 1 };
 	};
 
 	for (int x = bb.top_left.x; x <= bb.bottom_right.x; x++) {
 		for (int y = bb.top_left.y; y <= bb.bottom_right.y; y++) {
-			if (IsInsideTriangle(Vec2i{ x, y }, t)) {
+			auto bar = Barycentric(Vec3f{ float(x), float(y), 0}, t);
+			if (bar.x < 0 || bar.y < 0 || bar.z < 0) continue;
+			float z = 0;
+			z += t.v_0.z * bar.x;
+			z += t.v_1.z * bar.y;
+			z += t.v_2.z * bar.z;
+			if (img->zbuffer[int(x + y*img->width())] < z) {
+				img->zbuffer[int(x + y*img->width())] = z;
 				img->SetColor(x, y, color);
 			}
 		}

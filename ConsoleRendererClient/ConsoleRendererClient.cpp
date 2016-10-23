@@ -7,6 +7,7 @@
 #include "ImageHelper.h"
 #include "Geometry.h"
 #include <vector>
+#include <time.h>
 
 
 
@@ -97,69 +98,57 @@ int main()
 
 	Mat4f translationM = {
 		{ 1, 0, 0, 0},
-		{ 0, 1, 0,  0},
-		{ 0, 0, 1, -0.5 },
+		{ 0, 1, 0, 0},
+		{ 0, 0, 1, 0 },
 		{ 0, 0, 0, 1 }
 	};
 
 	
 	
-	Vec3f cubemodel[36];
-	Color colors[12] = {
-		0x0000ff,
-		0x00ff00,
-		0x00ffff,
-		0xff0000,
-		0xff00ff,
-		0xffffff,
-		0x0000ff,
-		0x00ff00,
-		0x00ffff,
-		0xff0000,
-		0xff00ff,
-		0xffffff
-	};
+	Vec3f cube_model[36];
+	Vec3f light_dir = {0, 0, -1};
 
-	for (unsigned int i = 0; i < 12; ++i) {
-		for (int j = 0; j < 3; ++j) {
-			cubemodel[3 * i + j] = 
+	for (unsigned int i = 0; i < 36; ++i) {
+			cube_model[i] = 
 				ApplyMatrix(translationM,
-					//ApplyMatrix(rotationZM,
-						ApplyMatrix(rotationYM,
-							//ApplyMatrix(rotationXM,
-							ApplyMatrix(scaleM,
-								CubeTris[3 * i + j])));//);
-		}
-		ImageHelper::DrawTriangle(img, 
-			{colors[(i) % 12]},
-			{
-				{ int(cubemodel[3*i+0].x + 60), int(cubemodel[3*i+0].y + 60) },
-				{ int(cubemodel[3*i+1].x + 60), int(cubemodel[3*i+1].y + 60) },
-				{ int(cubemodel[3*i+2].x + 60), int(cubemodel[3*i+2].y + 60) },					
-			});
-
+					ApplyMatrix(rotationYM,
+						ApplyMatrix(scaleM,
+							CubeTris[i])));
 	}
 
+	float totaltime = 0;
+	float deltatime = 0;
 	while (true) {
+		auto t = clock();
 		img->Clear();
 		for (unsigned int i = 0; i < 12; ++i) {
 			for (int j = 0; j < 3; ++j) {
-				cubemodel[3 * i + j] = 
+				cube_model[3 * i + j] = 
 					ApplyMatrix(rotationZM,
 						ApplyMatrix(rotationYM,
-								cubemodel[3 * i + j]));
+								cube_model[3 * i + j]));
 			}
-			ImageHelper::DrawTriangle(img,
-			{ colors[(i) % 12] },
-			{
-				{ int(cubemodel[3 * i + 0].x + 60), int(cubemodel[3 * i + 0].y + 60) },
-				{ int(cubemodel[3 * i + 1].x + 60), int(cubemodel[3 * i + 1].y + 60) },
-				{ int(cubemodel[3 * i + 2].x + 60), int(cubemodel[3 * i + 2].y + 60) },
-			});
+			auto normal = normalized(cross(cube_model[3 * i + 2] - cube_model[3 * i], cube_model[3 * i + 1] - cube_model[3 * i]));
+			auto intensity = dot(normal, light_dir);
+			if (intensity > 0) {
+				Color color = { 0xffffff };
+				color.r *=  intensity;
+				color.g *= intensity;
+				color.b *= intensity;
+				ImageHelper::DrawTriangle(img,
+				color,
+				{
+					cube_model[3 * i + 0] + Vec3f{ 60, 60, 0 },
+					cube_model[3 * i + 1] + Vec3f{ 60, 60, 0 },
+					cube_model[3 * i + 2] + Vec3f{ 60, 60, 0 }
+				});
+			}
 
 		}
 		renderer->Render(img);
 		renderer->ShowFps(img);
+		deltatime = 1 / renderer->fps();
+		totaltime += deltatime;
 	}
 
 	renderer->Render(img);
