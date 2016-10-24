@@ -11,9 +11,7 @@ Image::Image(int sizeX, int sizeY) : Image::Image(sizeX, sizeY, {0x000000}) {
 Image::Image(int sizeX, int sizeY, Color initialColor) : size_x_(sizeX), size_y_(sizeY) {
 	buffer_ = static_cast<Color *>(malloc(size_x_ * size_y_ * sizeof(Color)));
 	zbuffer = new float[size_x_*size_y_];
-	for (int i = 0; i < size_x_*size_y_; ++i) {
-		zbuffer[i] = -FLT_MAX;
-	}
+
 	Clear(initialColor);
 }
 

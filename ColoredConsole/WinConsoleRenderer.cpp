@@ -6,6 +6,7 @@
 #include "ConsoleColorList.h"
 #include "ConsoleColorMap.h"
 #include <time.h>
+#include <thread>
 
 namespace ColoredConsole {
 WinConsoleRenderer::WinConsoleRenderer(int sizeX, int sizeY) : size_x_(sizeX), size_y_(sizeY) {
@@ -50,6 +51,12 @@ void WinConsoleRenderer::Render(const Image* img) {
 	SetConsoleTextAttribute(console_handle_, base_atr_);
 
 	fps_ = CLOCKS_PER_SEC / float(clock() - begin_time);
+
+	// Set fps to 60
+	if(fps_ > 60) {
+		fps_ = 60;
+		std::this_thread::sleep_for(std::chrono::milliseconds(int((fps_ - 60)*1000)));
+	}
 }
 
 void WinConsoleRenderer::ShowFps(const Image* img) {
@@ -115,7 +122,7 @@ int WinConsoleRenderer::RgbToColorCode(Color color) {
 		int32_t difB = (color.b - (testColor & 0x0000ff));
 
 		// Weird abs calculation
-		uint32_t temp = difR >> 31;
+		/*uint32_t temp = difR >> 31;
 		difR ^= temp;
 		difR += temp & 1;
 		temp = difG >> 31;
@@ -123,9 +130,13 @@ int WinConsoleRenderer::RgbToColorCode(Color color) {
 		difG += temp & 1;
 		temp = difB >> 31;
 		difB ^= temp;
-		difB += temp & 1;
+		difB += temp & 1;*/
 
-		auto newDif = difR + difG + difB;
+		difR *= difR;
+		difG *= difG;
+		difB *= difB;
+
+		auto newDif = sqrt(difR + difG + difB);
 		if (newDif < dif) {
 			dif = newDif;
 			key = testColor;

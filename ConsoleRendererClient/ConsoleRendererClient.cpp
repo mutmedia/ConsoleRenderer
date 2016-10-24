@@ -14,7 +14,7 @@
 using namespace ColoredConsole;
 using namespace Geometry;
 
-const Vec3f CubeTris[36] = {
+const Vec3f CubeModel[36] = {
 	{ -1.0f,-1.0f,-1.0f },
 	{ -1.0f,-1.0f, 1.0f },
 	{ -1.0f, 1.0f, 1.0f },
@@ -60,60 +60,11 @@ int main()
 
 	auto img = new Image(w, h);
 	auto renderer = new WinConsoleRenderer(w, h);
-
-	Mat4f projectionM = {
-		{ 1, 0, 0, 0 },
-		{ 0, 1, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0, 1 }
-	};
-
-	Mat4f scaleM = {
-		{ 30, 0, 0, 0 },
-		{ 0, 30, 0, 0 },
-		{ 0, 0, 30, 0 },
-		{ 0, 0, 0, 1 }
-	};
-
-	Mat4f rotationYM = {
-		{ cos(0.1), 0, -sin(0.1), 0 },
-		{ 0, 1, 0, 0 },
-		{ sin(0.1), 0, cos(0.1), 0 },
-		{ 0, 0, 0, 1 }
-	};
-
-	Mat4f rotationZM = {
-		{ cos(0.1), -sin(0.1), 0, 0 },
-		{ sin(0.1), cos(0.1), 0, 0 },
-		{ 0, 0, 1, 0 },
-		{ 0, 0, 0, 1 }
-	};
-
-	Mat4f rotationXM = {
-		{ 1, 0, 0, 0 },
-		{ 0, 0.6, -0.8, 0 },
-		{ 0, 0.8, 0.6 , 0 },		
-		{ 0, 0, 0, 1 }
-	};
-
-	Mat4f translationM = {
-		{ 1, 0, 0, 0},
-		{ 0, 1, 0, 0},
-		{ 0, 0, 1, 0 },
-		{ 0, 0, 0, 1 }
-	};
-
 	
-	
-	Vec3f cube_model[36];
+	Vec3f cube_mesh[36];
 	Vec3f light_dir = {0, 0, -1};
 
 	for (unsigned int i = 0; i < 36; ++i) {
-			cube_model[i] = 
-				ApplyMatrix(translationM,
-					ApplyMatrix(rotationYM,
-						ApplyMatrix(scaleM,
-							CubeTris[i])));
 	}
 
 	float totaltime = 0;
@@ -123,26 +74,86 @@ int main()
 		img->Clear();
 		for (unsigned int i = 0; i < 12; ++i) {
 			for (int j = 0; j < 3; ++j) {
-				cube_model[3 * i + j] = 
-					ApplyMatrix(rotationZM,
-						ApplyMatrix(rotationYM,
-								cube_model[3 * i + j]));
+				cube_mesh[3 * i + j] = CubeModel[3 * i + j];
+				cube_mesh[3 * i + j] = Scale(cube_mesh[3 * i + j], { 10.0f, 10.0f, 10.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { -1.0f, 0.6f, 0.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { -1.0f*totaltime, 0.6f*totaltime, 0.0f });
+				cube_mesh[3 * i + j] = Translate(cube_mesh[3 * i + j], { -50.f, -50.f, -800.0f*(0.5f + 0.5f*cos(totaltime + 3.1415f)) });
 			}
-			auto normal = normalized(cross(cube_model[3 * i + 2] - cube_model[3 * i], cube_model[3 * i + 1] - cube_model[3 * i]));
+			auto normal = normalized(cross(cube_mesh[3 * i + 2] - cube_mesh[3 * i], cube_mesh[3 * i + 1] - cube_mesh[3 * i]));
+			cube_mesh[3 * i + 0] = Perspective(cube_mesh[3 * i + 0], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 1] = Perspective(cube_mesh[3 * i + 1], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 2] = Perspective(cube_mesh[3 * i + 2], { 0.0f, 0.0f, 200.0f });	
+					
 			auto intensity = dot(normal, light_dir);
-			if (intensity > 0) {
-				Color color = { 0xffffff };
+			if (intensity < 0) intensity = 0;
+				Color color = { 0x0000ff };
 				color.r *=  intensity;
 				color.g *= intensity;
 				color.b *= intensity;
 				ImageHelper::DrawTriangle(img,
 				color,
 				{
-					cube_model[3 * i + 0] + Vec3f{ 60, 60, 0 },
-					cube_model[3 * i + 1] + Vec3f{ 60, 60, 0 },
-					cube_model[3 * i + 2] + Vec3f{ 60, 60, 0 }
+					cube_mesh[3 * i + 0] + Vec3f{ 60, 60, 0 },
+					cube_mesh[3 * i + 1] + Vec3f{ 60, 60, 0 },
+					cube_mesh[3 * i + 2] + Vec3f{ 60, 60, 0 }
 				});
+
+		}
+		for (unsigned int i = 0; i < 12; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				cube_mesh[3 * i + j] = CubeModel[3 * i + j];
+				cube_mesh[3 * i + j] = Scale(cube_mesh[3 * i + j], { 20.0f, 20.0f, 20.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { 1.0f, 0.6f, 0.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { -1.0f*totaltime, 0.6f*totaltime, 0.0f });
+				cube_mesh[3 * i + j] = Translate(cube_mesh[3 * i + j], { 20.f, 20.f, -800.f*(0.5f + 0.5f*cos(totaltime)) });
 			}
+			auto normal = normalized(cross(cube_mesh[3 * i + 2] - cube_mesh[3 * i], cube_mesh[3 * i + 1] - cube_mesh[3 * i]));
+			cube_mesh[3 * i + 0] = Perspective(cube_mesh[3 * i + 0], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 1] = Perspective(cube_mesh[3 * i + 1], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 2] = Perspective(cube_mesh[3 * i + 2], { 0.0f, 0.0f, 200.0f });
+
+			auto intensity = dot(normal, light_dir);
+			if (intensity < 0) intensity = 0;
+			Color color = { 0xff0000 };
+			color.r *= intensity;
+			color.g *= intensity;
+			color.b *= intensity;
+			ImageHelper::DrawTriangle(img,
+				color,
+				{
+					cube_mesh[3 * i + 0] + Vec3f{ 60, 60, 0 },
+					cube_mesh[3 * i + 1] + Vec3f{ 60, 60, 0 },
+				cube_mesh[3 * i + 2] + Vec3f{ 60, 60, 0 }
+				});
+
+		}
+		for (unsigned int i = 0; i < 12; ++i) {
+			for (int j = 0; j < 3; ++j) {
+				cube_mesh[3 * i + j] = CubeModel[3 * i + j];
+				cube_mesh[3 * i + j] = Scale(cube_mesh[3 * i + j], { 15.0f, 15.0f, 15.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { -0.6f, 0.0f, 1.0f });
+				cube_mesh[3 * i + j] = Rotate(cube_mesh[3 * i + j], { -1.0f*totaltime, 0.6f*totaltime, 0.0f });
+				cube_mesh[3 * i + j] = Translate(cube_mesh[3 * i + j], { -10.f, -10.f, -800.0f*(0.5f + 0.5f*sin(totaltime + 3.1415f)) });
+			}
+			auto normal = normalized(cross(cube_mesh[3 * i + 2] - cube_mesh[3 * i], cube_mesh[3 * i + 1] - cube_mesh[3 * i]));
+			cube_mesh[3 * i + 0] = Perspective(cube_mesh[3 * i + 0], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 1] = Perspective(cube_mesh[3 * i + 1], { 0.0f, 0.0f, 200.0f });
+			cube_mesh[3 * i + 2] = Perspective(cube_mesh[3 * i + 2], { 0.0f, 0.0f, 200.0f });
+
+			auto intensity = dot(normal, light_dir);
+			if (intensity < 0) intensity = 0;
+			Color color = { 0x00ff00 };
+			color.r *= intensity;
+			color.g *= intensity;
+			color.b *= intensity;
+			ImageHelper::DrawTriangle(img,
+				color,
+				{
+					cube_mesh[3 * i + 0] + Vec3f{ 60, 60, 0 },
+					cube_mesh[3 * i + 1] + Vec3f{ 60, 60, 0 },
+				cube_mesh[3 * i + 2] + Vec3f{ 60, 60, 0 }
+				});
 
 		}
 		renderer->Render(img);
