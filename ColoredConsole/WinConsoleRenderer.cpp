@@ -60,7 +60,7 @@ void WinConsoleRenderer::Render(const Image* img) {
 }
 
 void WinConsoleRenderer::ShowFps(const Image* img) {
-	SetConsoleCursorPosition(console_handle_, {size_x_, size_y_});
+	SetConsoleCursorPosition(console_handle_, {0, size_y_});
 	printf("FPS: %f", fps_);
 }
 
@@ -77,6 +77,7 @@ void WinConsoleRenderer::TestColor() {
 			count++;
 		}
 	}
+	
 	SetConsoleTextAttribute(console_handle_, base_atr_);
 	WriteConsoleOutputA(console_handle_, char_info_array_, { 32, 32 }, { 0 }, &buffer_rectangle_);
 	SetConsoleCursorPosition(console_handle_, { 0, 32 });
@@ -120,17 +121,6 @@ int WinConsoleRenderer::RgbToColorCode(Color color) {
 		int32_t difR = (color.r - ((testColor & 0xff0000) >> (16)));
 		int32_t difG = (color.g - ((testColor & 0x00ff00) >> (8)));
 		int32_t difB = (color.b - (testColor & 0x0000ff));
-
-		// Weird abs calculation
-		/*uint32_t temp = difR >> 31;
-		difR ^= temp;
-		difR += temp & 1;
-		temp = difG >> 31;
-		difG ^= temp;
-		difG += temp & 1;
-		temp = difB >> 31;
-		difB ^= temp;
-		difB += temp & 1;*/
 
 		difR *= difR;
 		difG *= difG;

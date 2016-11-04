@@ -14,8 +14,7 @@ float InvSqrt(float x) {
 	return x;
 }
 
-namespace Geometry {
-	
+namespace Geometry {	
 
 	Vec2i Vec2i::operator+(const Vec2i b) const {
 		return{ x + b.x, y + b.y };
@@ -33,23 +32,25 @@ namespace Geometry {
 	Vec3f Vec3f::operator*(const float k) const {
 		return{ k*x, k*y, k*z };
 	}
-	Vec3f cross(Vec3f u, Vec3f v) {
-		return{ u.y * v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y - u.y*v.x };
-	}
-	float dot(Vec3f u, Vec3f v)
-	{
-		return u.x * v.x + u.y * v.y + u.z*v.z;
-	}
-	float length(Vec3f v)
+
+	float length(const Vec3f &v)
 	{
 		return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 	}
-	Vec3f normalized(Vec3f v)
+	Vec3f normalized(const Vec3f &v)
 	{
 		return v * InvSqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 	}
+	Vec3f cross(const Vec3f &u, const Vec3f &v) {
+		return{ u.y * v.z - u.z*v.y, u.z*v.x - u.x*v.z, u.x*v.y - u.y*v.x };
+	}
+	float dot(const Vec3f &u, const Vec3f &v)
+	{
+		return u.x * v.x + u.y * v.y + u.z*v.z;
+	}
+	
 
-	Vec3f ApplyMatrix(const Vec3f & v, const Mat4f m) {
+	Vec3f ApplyMatrix(const Vec3f & v, const Matrix m) {
 		float result[4];
 		for (int i = 0; i < 4; ++i) {
 			result[i] = m[i][0] * v.x + m[i][1] * v.y + m[i][2] * v.z + m[i][3];
@@ -126,7 +127,7 @@ namespace Geometry {
 		});
 	}
 
-	std::vector<Vec3f> ApplyMatrix(const Mat4f m, const std::vector<Vec3f> vs)
+	std::vector<Vec3f> ApplyMatrix(const Matrix m, const std::vector<Vec3f> vs)
 	{
 		auto list = std::vector<Vec3f>(vs);
 		for (auto v : vs) {
