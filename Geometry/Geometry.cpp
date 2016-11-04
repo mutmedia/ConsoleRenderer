@@ -52,10 +52,15 @@ namespace Geometry {
 
 	Vec3f ApplyMatrix(const Vec3f & v, const Matrix m) {
 		float result[4];
+		Vec3f ret;
 		for (int i = 0; i < 4; ++i) {
 			result[i] = m[i][0] * v.x + m[i][1] * v.y + m[i][2] * v.z + m[i][3];
 		}
-		return{ result[0] / result[3], result[1] / result[3], result[2] / result[3] };
+		ret = { result[0], result[1], result[2] };
+		if(result[3] != 1) {
+			ret = ret * (1 / result[3]);
+		}
+		return ret;
 	}
 
 	GEOMETRY_API Vec3f Translate(const Vec3f & v, const Vec3f & t)
@@ -116,14 +121,26 @@ namespace Geometry {
 		});
 	}
 
-	GEOMETRY_API Vec3f Perspective(const Vec3f & v, const Vec3f & camera)
+	GEOMETRY_API Vec3f Perspective(const Vec3f & v, float l, float r, float b, float t, float n, float f)
 	{
+		// TODO: understand right and left hand coordinates and why i have to make stuff negative
 		return ApplyMatrix(v,
 			Mat4f{
-				{ 1, 0, 0, 0 },
-				{ 0, 1, 0, 0 },
-				{ 0, 0, 1, 0 },
-				{ 0, 0, -1/camera.z, 1 },
+				{ -2.f*n/(r-l)	, 0			, (r+l)/(r-l)	, 0 },
+				{ 0			, -2.f*n/(t-b)	, (t+b)/(t-b)	, 0 },
+				{ 0			, 0			, (f+n)/(f-n)	, 2.f*f*n/(f-n) },
+				{ 0			, 0			, -1		, 0 },
+		});
+	}
+
+	GEOMETRY_API Vec3f Viewport(const Vec3f & v, float x, float y, float w, float h)
+	{
+		float depth = 255.0f;
+		return ApplyMatrix(v, Mat4f{
+			{w/2.f, 0, 0, x + w/2.f},
+			{0, h/2.f, 0, y + h/2.f},
+			{0, 0, 1.f, 1.f},
+			{0, 0, 0, 1.f}
 		});
 	}
 

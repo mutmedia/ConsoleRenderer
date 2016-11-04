@@ -77,7 +77,8 @@ namespace Geometry {
 	GEOMETRY_API Vec3f Translate(const Vec3f  &v, const Vec3f &t);
 	GEOMETRY_API Vec3f Rotate(const Vec3f  &v, const Vec3f &r);
 	GEOMETRY_API Vec3f Scale(const Vec3f  &v, const Vec3f &s);
-	GEOMETRY_API Vec3f Perspective(const Vec3f  &v, const Vec3f &camera);
+	GEOMETRY_API Vec3f Perspective(const Vec3f  &v, float l, float r, float b, float t, float n, float f);
+	GEOMETRY_API Vec3f Viewport(const Vec3f  &v, float x, float y, float w, float h);
 
 	struct Triangle {
 		Vec3f v_0, v_1, v_2;
@@ -103,5 +104,4 @@ namespace Geometry {
 		}
 		return res;
 	}
-
 }
