@@ -91,7 +91,6 @@ void handleInputs(HANDLE rHnd) {
 
 int main()
 {
-
 	int w = 120, h = 120;
 
 	auto img = new Image(w, h);
@@ -206,13 +205,13 @@ int main()
 			cube_mesh[3 * i + 2] = Perspective(cube_mesh[3 * i + 2], -0.1, 0.1, -0.1, 0.1, 0.1, 20.0);
 
 			// Viewport matrix
-			cube_mesh[3 * i + 0] = Viewport(cube_mesh[3 * i + 0], 0, 0, w, h);
-			cube_mesh[3 * i + 1] = Viewport(cube_mesh[3 * i + 1], 0, 0, w, h);
-			cube_mesh[3 * i + 2] = Viewport(cube_mesh[3 * i + 2], 0, 0, w, h);
+			cube_mesh[3 * i + 0] = Viewport(cube_mesh[3 * i + 0], 1, 1, w, h);
+			cube_mesh[3 * i + 1] = Viewport(cube_mesh[3 * i + 1], 1, 1, w, h);
+			cube_mesh[3 * i + 2] = Viewport(cube_mesh[3 * i + 2], 1, 1, w, h);
 
 			auto intensity = dot(normal, light_dir);
 			// Ambient light
-			intensity += 0.01;
+			//intensity += 2;
 			if (intensity < 0) intensity = 0;
 			if (intensity > 1) intensity = 1;
 			Color color = { 0x00ff00 };
